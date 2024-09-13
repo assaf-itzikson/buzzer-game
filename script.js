@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const userList = document.getElementById('userList');
 
     let users = [];
-    let socket = new WebSocket('wss://buzzer-race.glitch.me');
+    let socket = new WebSocket('ws://localhost:8080');
 
     socket.onmessage = (event) => {
         const message = JSON.parse(event.data);
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     buzzButton.addEventListener('click', () => {
         if (socket.readyState === WebSocket.OPEN) {
-            socket.send(JSON.stringify({ type: 'buzz' }));
+            socket.send(JSON.stringify({ type: 'buzz', username: usernameInput.value.trim() }));
         } else {
             console.error('WebSocket is not open. ReadyState:', socket.readyState);
         }

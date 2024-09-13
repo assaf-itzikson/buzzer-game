@@ -1,0 +1,12 @@
+{
+  "name": "buzzer-game",
+  "version": "1.0.0",
+  "description": "A simple buzzer game",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.0.0"
+  }
+}
