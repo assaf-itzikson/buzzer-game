@@ -5,27 +5,33 @@ document.addEventListener('DOMContentLoaded', () => {
     const userList = document.getElementById('userList');
 
     let users = [];
+    let socket = new WebSocket('ws://localhost:8080');
+
+    socket.onmessage = (event) => {
+        const message = JSON.parse(event.data);
+        if (message.type === 'userJoined') {
+            users.push(message.username);
+            updateUserList();
+            buzzButton.disabled = false;
+        } else if (message.type === 'userBuzzed') {
+            alert(`${message.username} buzzed in first!`);
+            users = [];
+            updateUserList();
+            buzzButton.disabled = true;
+        }
+    };
 
     userForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const username = usernameInput.value.trim();
-        if (username && !users.includes(username)) {
-            users.push(username);
-            updateUserList();
+        if (username) {
+            socket.send(JSON.stringify({ type: 'join', username }));
             usernameInput.value = '';
-            buzzButton.disabled = false;
         }
     });
 
     buzzButton.addEventListener('click', () => {
-        const buzzedUser = users.shift();
-        if (buzzedUser) {
-            alert(`${buzzedUser} buzzed in!`);
-            updateUserList();
-            if (users.length === 0) {
-                buzzButton.disabled = true;
-            }
-        }
+        socket.send(JSON.stringify({ type: 'buzz' }));
     });
 
     function updateUserList() {
