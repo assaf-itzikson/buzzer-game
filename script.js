@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const userList = document.getElementById('userList');
 
     let users = [];
-    let socket = new WebSocket('ws://localhost:8080');
+    let socket = new WebSocket('wss://buzzer-race.glitch.me');
 
     socket.onmessage = (event) => {
         const message = JSON.parse(event.data);
