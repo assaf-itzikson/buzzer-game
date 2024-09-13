@@ -7,6 +7,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let users = [];
     let socket = new WebSocket('wss://buzzer-race.glitch.me');
 
+    socket.onopen = () => {
+        console.log('WebSocket connection established');
+    };
+
     socket.onmessage = (event) => {
         const message = JSON.parse(event.data);
         if (message.type === 'userJoined') {
@@ -24,11 +28,13 @@ document.addEventListener('DOMContentLoaded', () => {
     userForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const username = usernameInput.value.trim();
-        if (username && socket.readyState === WebSocket.OPEN) {
-            socket.send(JSON.stringify({ type: 'join', username }));
-            usernameInput.value = '';
-        } else {
-            console.error('WebSocket is not open. ReadyState:', socket.readyState);
+        if (username) {
+            if (socket.readyState === WebSocket.OPEN) {
+                socket.send(JSON.stringify({ type: 'join', username }));
+                usernameInput.value = '';
+            } else {
+                console.error('WebSocket is not open. ReadyState:', socket.readyState);
+            }
         }
     });
 
