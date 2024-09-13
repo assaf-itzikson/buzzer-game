@@ -24,14 +24,20 @@ document.addEventListener('DOMContentLoaded', () => {
     userForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const username = usernameInput.value.trim();
-        if (username) {
+        if (username && socket.readyState === WebSocket.OPEN) {
             socket.send(JSON.stringify({ type: 'join', username }));
             usernameInput.value = '';
+        } else {
+            console.error('WebSocket is not open. ReadyState:', socket.readyState);
         }
     });
 
     buzzButton.addEventListener('click', () => {
-        socket.send(JSON.stringify({ type: 'buzz' }));
+        if (socket.readyState === WebSocket.OPEN) {
+            socket.send(JSON.stringify({ type: 'buzz' }));
+        } else {
+            console.error('WebSocket is not open. ReadyState:', socket.readyState);
+        }
     });
 
     function updateUserList() {
