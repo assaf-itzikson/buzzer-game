@@ -1,5 +1,5 @@
 const WebSocket = require('ws');
-const server = new WebSocket.Server({ port: 8080 });
+const server = new WebSocket('wss://small-valley-camera.glitch.me');
 
 let users = [];
 
