@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (socket.readyState === WebSocket.OPEN) {
                 socket.send(JSON.stringify({ type: 'queryUsers' }));
             }
-        }, 5000);
+        }, 100);
     };
 
     socket.onmessage = (event) => {
