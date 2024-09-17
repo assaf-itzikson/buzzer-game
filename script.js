@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let users = [];
     let socket = new WebSocket('wss://small-valley-camera.glitch.me');
-    
+
 
     socket.onopen = () => {
         console.log('WebSocket connection established');
@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
             updateUserList();
             buzzButton.disabled = false;
         } else if (message.type === 'userBuzzed') {
+            console.log(`${message.username} buzzed in!`);
             alert(`${message.username} buzzed in first!`);
             users = [];
             updateUserList();
