@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let users = [];
     let currentUser = '';
-    let socket = new WebSocket('wss://small-valley-camera.glitch.me:8080');
+    let socket = new WebSocket('wss://house-of-games.glitch.me:8080');
 
     socket.onopen = () => {
         console.log('WebSocket connection established');
