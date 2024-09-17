@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let users = [];
     let currentUser = '';
-    let socket = new WebSocket('wss://house-of-games.glitch.me');
+    let socket = new WebSocket('wss://https://house-of-games.glitch.me/');
 
     socket.onopen = () => {
         console.log('WebSocket connection established');
@@ -28,6 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
             users = [];
             updateUserList();
             buzzButton.disabled = true;
+        } else if (message.type === 'resetBuzz') {
+            buzzButton.disabled = false;
         }
     };
 
