@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
             updateUserList();
             buzzButton.disabled = false;
         } else if (message.type === 'userBuzzed') {
-            alert(`${message.username} buzzed in first!`);
+            alert(`${message.username} buzzed in first! 4`);
             users = [];
             updateUserList();
             buzzButton.disabled = true;
