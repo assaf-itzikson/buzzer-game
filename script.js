@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const userList = document.getElementById('userList');
 
     let users = [];
+    let currentUser = '';
     let socket = new WebSocket('wss://small-valley-camera.glitch.me');
 
 
@@ -33,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (username) {
             if (socket.readyState === WebSocket.OPEN) {
                 socket.send(JSON.stringify({ type: 'join', username }));
+                currentUser = username;
                 usernameInput.value = '';
             } else {
                 console.error('WebSocket is not open. ReadyState:', socket.readyState);
@@ -42,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     buzzButton.addEventListener('click', () => {
         if (socket.readyState === WebSocket.OPEN) {
-            socket.send(JSON.stringify({ type: 'buzz', username: usernameInput.value.trim() }));
+            socket.send(JSON.stringify({ type: 'buzz', username: currentUser }));
         } else {
             console.error('WebSocket is not open. ReadyState:', socket.readyState);
         }
