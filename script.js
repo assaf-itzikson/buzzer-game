@@ -17,12 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (message.type === 'currentUsers') {
             users = message.users;
             updateUserList();
-        } else if (message.type === 'userJoined') {
-            users.push(message.username);
-            updateUserList();
-            buzzButton.disabled = false;
         } else if (message.type === 'userBuzzed') {
-            console.log(`${message.username} buzzed in!`);
             alert(`${message.username} buzzed in first!`);
             users = [];
             updateUserList();
