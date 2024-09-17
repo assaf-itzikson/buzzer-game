@@ -28,8 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
             users = [];
             updateUserList();
             buzzButton.disabled = true;
-        } else if (message.type === 'resetBuzz') {
-            buzzButton.disabled = false;
         }
     };
 
@@ -50,14 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
     buzzButton.addEventListener('click', () => {
         if (socket.readyState === WebSocket.OPEN) {
             socket.send(JSON.stringify({ type: 'buzz', username: currentUser }));
-        } else {
-            console.error('WebSocket is not open. ReadyState:', socket.readyState);
-        }
-    });
-
-    deleteButton.addEventListener('click', () => {
-        if (socket.readyState === WebSocket.OPEN) {
-            socket.send(JSON.stringify({ type: 'deleteUsers' }));
         } else {
             console.error('WebSocket is not open. ReadyState:', socket.readyState);
         }
