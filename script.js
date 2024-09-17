@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // const userForm = document.getElementById('userForm');
-    // const usernameInput = document.getElementById('username');
-    // const buzzButton = document.getElementById('buzzButton');
-    // const userList = document.getElementById('userList');
+    const userForm = document.getElementById('userForm');
+    const usernameInput = document.getElementById('username');
+    const buzzButton = document.getElementById('buzzButton');
+    const userList = document.getElementById('userList');
 
     let users = [];
     let socket = new WebSocket('wss://small-valley-camera.glitch.me');
