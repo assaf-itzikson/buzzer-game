@@ -8,14 +8,16 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentUser = '';
     let socket = new WebSocket('wss://small-valley-camera.glitch.me');
 
-
     socket.onopen = () => {
         console.log('WebSocket connection established');
     };
 
     socket.onmessage = (event) => {
         const message = JSON.parse(event.data);
-        if (message.type === 'userJoined') {
+        if (message.type === 'currentUsers') {
+            users = message.users;
+            updateUserList();
+        } else if (message.type === 'userJoined') {
             users.push(message.username);
             updateUserList();
             buzzButton.disabled = false;
