@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const userForm = document.getElementById('userForm');
     const usernameInput = document.getElementById('username');
     const buzzButton = document.getElementById('buzzButton');
-    const deleteButton = document.getElementById('deleteButton');
     const userList = document.getElementById('userList');
 
     let users = [];
