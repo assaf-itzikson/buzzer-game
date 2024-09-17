@@ -2,11 +2,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const userForm = document.getElementById('userForm');
     const usernameInput = document.getElementById('username');
     const buzzButton = document.getElementById('buzzButton');
+    const deleteButton = document.getElementById('deleteButton');
     const userList = document.getElementById('userList');
 
     let users = [];
     let currentUser = '';
-    let socket = new WebSocket('wss://small-valley-camera.glitch.me');
+    let socket = new WebSocket('wss://small-valley-camera.glitch.me:8080');
 
     socket.onopen = () => {
         console.log('WebSocket connection established');
@@ -47,6 +48,14 @@ document.addEventListener('DOMContentLoaded', () => {
     buzzButton.addEventListener('click', () => {
         if (socket.readyState === WebSocket.OPEN) {
             socket.send(JSON.stringify({ type: 'buzz', username: currentUser }));
+        } else {
+            console.error('WebSocket is not open. ReadyState:', socket.readyState);
+        }
+    });
+
+    deleteButton.addEventListener('click', () => {
+        if (socket.readyState === WebSocket.OPEN) {
+            socket.send(JSON.stringify({ type: 'deleteUsers' }));
         } else {
             console.error('WebSocket is not open. ReadyState:', socket.readyState);
         }
