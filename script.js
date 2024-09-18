@@ -11,6 +11,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     socket.onopen = () => {
         console.log('WebSocket connection established');
+        setInterval(() => {
+            if (socket.readyState === WebSocket.OPEN) {
+                socket.send(JSON.stringify({ type: 'queryUsers' }));
+            }
+        }, 100);
     };
 
     socket.onmessage = (event) => {
