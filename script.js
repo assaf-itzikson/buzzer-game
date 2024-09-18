@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 socket.send(JSON.stringify({ type: 'join', username }));
                 currentUser = username;
                 usernameInput.value = '';
+                buzzButton.disabled = false; // Enable buzz button when a user joins
             } else {
                 console.error('WebSocket is not open. ReadyState:', socket.readyState);
             }
