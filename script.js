@@ -9,11 +9,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     socket.onopen = () => {
         console.log('WebSocket connection established');
+        setInterval(() => {
+            if (socket.readyState === WebSocket.OPEN) {
+                socket.send(JSON.stringify({ type: 'queryUsers' }));
+            }
+        }, 100);
     };
 
     socket.onmessage = (event) => {
         const message = JSON.parse(event.data);
-        if (message.type === 'userJoined') {
+        if (message.type === 'currentUsers') {
+            users = message.users;
+            updateUserList();
+        } else if (message.type === 'userJoined') {
             users.push(message.username);
             updateUserList();
             buzzButton.disabled = false;
@@ -22,6 +30,8 @@ document.addEventListener('DOMContentLoaded', () => {
             users = [];
             updateUserList();
             buzzButton.disabled = true;
+        } else if (message.type === 'resetBuzz') {
+            buzzButton.disabled = false;
         }
     };
 
