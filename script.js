@@ -55,13 +55,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    deleteButton.addEventListener('click', () => {
-        if (socket.readyState === WebSocket.OPEN) {
-            socket.send(JSON.stringify({ type: 'deleteUsers' }));
-        } else {
-            console.error('WebSocket is not open. ReadyState:', socket.readyState);
-        }
-    });
+    // deleteButton.addEventListener('click', () => {
+    //     if (socket.readyState === WebSocket.OPEN) {
+    //         socket.send(JSON.stringify({ type: 'deleteUsers' }));
+    //     } else {
+    //         console.error('WebSocket is not open. ReadyState:', socket.readyState);
+    //     }
+    // });
 
     function updateUserList() {
         userList.innerHTML = '';
