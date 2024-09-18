@@ -20,16 +20,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     socket.onmessage = (event) => {
         const message = JSON.parse(event.data);
-        if (message.type === 'userJoined') {
-            users.push(message.username);
+        if (message.type === 'currentUsers') {
+            users = message.users;
             updateUserList();
-            buzzButton.disabled = false;
         } else if (message.type === 'userBuzzed') {
-            console.log(`${message.username} buzzed in!`);
             alert(`${message.username} buzzed in first!`);
             users = [];
             updateUserList();
             buzzButton.disabled = true;
+        } else if (message.type === 'resetBuzz') {
+            buzzButton.disabled = false;
         }
     };
 
