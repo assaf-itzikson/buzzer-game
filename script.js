@@ -5,23 +5,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const userList = document.getElementById('userList');
 
     let users = [];
-    let currentUser = '';
     let socket = new WebSocket('wss://house-of-games.glitch.me/');
 
     socket.onopen = () => {
         console.log('WebSocket connection established');
-        setInterval(() => {
-            if (socket.readyState === WebSocket.OPEN) {
-                socket.send(JSON.stringify({ type: 'queryUsers' }));
-            }
-        }, 100);
     };
 
     socket.onmessage = (event) => {
         const message = JSON.parse(event.data);
-        if (message.type === 'currentUsers') {
-            users = message.users;
+        if (message.type === 'userJoined') {
+            users.push(message.username);
             updateUserList();
+            buzzButton.disabled = false;
         } else if (message.type === 'userBuzzed') {
             alert(`${message.username} buzzed in first!`);
             users = [];
@@ -36,7 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (username) {
             if (socket.readyState === WebSocket.OPEN) {
                 socket.send(JSON.stringify({ type: 'join', username }));
-                currentUser = username;
                 usernameInput.value = '';
             } else {
                 console.error('WebSocket is not open. ReadyState:', socket.readyState);
@@ -46,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     buzzButton.addEventListener('click', () => {
         if (socket.readyState === WebSocket.OPEN) {
-            socket.send(JSON.stringify({ type: 'buzz', username: currentUser }));
+            socket.send(JSON.stringify({ type: 'buzz', username: usernameInput.value.trim() }));
         } else {
             console.error('WebSocket is not open. ReadyState:', socket.readyState);
         }
