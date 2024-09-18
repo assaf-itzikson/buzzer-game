@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentUser = '';
     let socket = new WebSocket('wss://house-of-games.glitch.me');
 
-
     socket.onopen = () => {
         console.log('WebSocket connection established');
         setInterval(() => {
