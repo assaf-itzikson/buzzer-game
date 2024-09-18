@@ -13,6 +13,8 @@ server.on('connection', (socket) => {
             broadcast({ type: 'userBuzzed', username: data.username });
             users = [];
             broadcast({ type: 'currentUsers', users: [] });
+        } else if (data.type === 'queryUsers') {
+            socket.send(JSON.stringify({ type: 'currentUsers', users: users.map(user => user.username) }));
         }
     });
 
