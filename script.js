@@ -4,7 +4,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const buzzButton = document.getElementById('buzzButton');
     const userList = document.getElementById('userList');
 
-    let socket = new WebSocket('wss://house-of-games.glitch.me/');
+    let users = [];
+    let currentUser = '';
+    let socket = new WebSocket('wss://house-of-games.glitch.me');
+
 
     socket.onopen = () => {
         console.log('WebSocket connection established');
@@ -17,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
             updateUserList();
             buzzButton.disabled = false;
         } else if (message.type === 'userBuzzed') {
+            console.log(`${message.username} buzzed in!`);
             alert(`${message.username} buzzed in first!`);
             users = [];
             updateUserList();
@@ -30,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (username) {
             if (socket.readyState === WebSocket.OPEN) {
                 socket.send(JSON.stringify({ type: 'join', username }));
+                currentUser = username;
                 usernameInput.value = '';
             } else {
                 console.error('WebSocket is not open. ReadyState:', socket.readyState);
@@ -39,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     buzzButton.addEventListener('click', () => {
         if (socket.readyState === WebSocket.OPEN) {
-            socket.send(JSON.stringify({ type: 'buzz', username: usernameInput.value.trim() }));
+            socket.send(JSON.stringify({ type: 'buzz', username: currentUser }));
         } else {
             console.error('WebSocket is not open. ReadyState:', socket.readyState);
         }
