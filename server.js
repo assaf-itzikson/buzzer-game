@@ -1,24 +1,24 @@
 const WebSocket = require('ws');
 const server = new WebSocket.Server({ port: 8080 });
 
-let rooms = { 'game room': [] };
+let rooms = { 'P&C\'s Team Hour Room': [] };
 
 server.on('connection', (socket) => {
     socket.on('message', (message) => {
         const data = JSON.parse(message);
         if (data.type === 'join') {
-            rooms['game room'].push({ username: data.username, socket });
-            broadcast('game room', { type: 'currentUsers', users: rooms['game room'].map(user => user.username) });
+            rooms['P&C\'s Team Hour Room'].push({ username: data.username, socket });
+            broadcast('P&C\'s Team Hour Room', { type: 'currentUsers', users: rooms['P&C\'s Team Hour Room'].map(user => user.username) });
             broadcastAdmin({ type: 'updateRooms', rooms: Object.keys(rooms) });
         } else if (data.type === 'buzz') {
-            broadcast('game room', { type: 'userBuzzed', username: data.username });
-            broadcast('game room', { type: 'resetBuzz' });
+            broadcast('P&C\'s Team Hour Room', { type: 'userBuzzed', username: data.username });
+            broadcast('P&C\'s Team Hour Room', { type: 'resetBuzz' });
         } else if (data.type === 'queryUsers') {
-            socket.send(JSON.stringify({ type: 'currentUsers', users: rooms['game room'].map(user => user.username) }));
+            socket.send(JSON.stringify({ type: 'currentUsers', users: rooms['P&C\'s Team Hour Room'].map(user => user.username) }));
         } else if (data.type === 'deleteRoom') {
-            if (rooms['game room']) {
-                rooms['game room'].forEach(user => user.socket.send(JSON.stringify({ type: 'roomDeleted' })));
-                rooms['game room'] = [];
+            if (rooms['P&C\'s Team Hour Room']) {
+                rooms['P&C\'s Team Hour Room'].forEach(user => user.socket.send(JSON.stringify({ type: 'roomDeleted' })));
+                rooms['P&C\'s Team Hour Room'] = [];
                 broadcastAdmin({ type: 'updateRooms', rooms: Object.keys(rooms) });
             }
         }

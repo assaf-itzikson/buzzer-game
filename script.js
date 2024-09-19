@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let users = [];
     let currentUser = '';
-    let currentRoom = 'game room';
+    let currentRoom = 'P&C\'s Team Hour Room';
     let socket = new WebSocket('wss://house-of-games.glitch.me');
 
     socket.onopen = () => {
