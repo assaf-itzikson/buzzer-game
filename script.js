@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const roomInput = document.getElementById('room');
     const buzzButton = document.getElementById('buzzButton');
     const userList = document.getElementById('userList');
+    const roomDisplay = document.getElementById('roomDisplay');
 
     let users = [];
     let currentUser = '';
@@ -26,8 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
             updateUserList();
         } else if (message.type === 'userBuzzed') {
             alert(`${message.username} buzzed in first!`);
-            users = [];
-            updateUserList();
             buzzButton.disabled = true;
         } else if (message.type === 'resetBuzz') {
             buzzButton.disabled = false;
@@ -50,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentRoom = room;
                 usernameInput.value = '';
                 roomInput.value = '';
+                roomDisplay.textContent = `Current Room: ${currentRoom}`;
                 buzzButton.disabled = false; // Enable buzz button when a user joins
             } else {
                 console.error('WebSocket is not open. ReadyState:', socket.readyState);

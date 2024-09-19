@@ -13,12 +13,25 @@
         <label for="room"></label><input type="text" id="room" placeholder="Enter room name to delete" required>
         <button type="submit">Delete Room</button>
     </form>
+    <ul id="roomList"></ul>
 </div>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const deleteRoomForm = document.getElementById('deleteRoomForm');
     const roomInput = document.getElementById('room');
+    const roomList = document.getElementById('roomList');
     let socket = new WebSocket('wss://house-of-games.glitch.me');
+
+    socket.onopen = () => {
+        console.log('WebSocket connection established');
+    };
+
+    socket.onmessage = (event) => {
+        const message = JSON.parse(event.data);
+        if (message.type === 'updateRooms') {
+            updateRoomList(message.rooms);
+        }
+    };
 
     deleteRoomForm.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -32,6 +45,25 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
+
+    function updateRoomList(rooms) {
+        roomList.innerHTML = '';
+        rooms.forEach(room => {
+            const li = document.createElement('li');
+            li.textContent = room;
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.addEventListener('click', () => {
+                if (socket.readyState === WebSocket.OPEN) {
+                    socket.send(JSON.stringify({ type: 'deleteRoom', room }));
+                } else {
+                    console.error('WebSocket is not open. ReadyState:', socket.readyState);
+                }
+            });
+            li.appendChild(deleteButton);
+            roomList.appendChild(li);
+        });
+    }
 });
 </script>
 </body>

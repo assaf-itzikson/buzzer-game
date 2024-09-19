@@ -12,16 +12,18 @@ server.on('connection', (socket) => {
             }
             rooms[data.room].push({ username: data.username, socket });
             broadcast(data.room, { type: 'currentUsers', users: rooms[data.room].map(user => user.username) });
+            broadcastAdmin({ type: 'updateRooms', rooms: Object.keys(rooms) });
         } else if (data.type === 'buzz') {
             broadcast(data.room, { type: 'userBuzzed', username: data.username });
-            rooms[data.room] = [];
-            broadcast(data.room, { type: 'currentUsers', users: [] });
             broadcast(data.room, { type: 'resetBuzz' });
         } else if (data.type === 'queryUsers') {
             socket.send(JSON.stringify({ type: 'currentUsers', users: rooms[data.room].map(user => user.username) }));
         } else if (data.type === 'deleteRoom') {
-            delete rooms[data.room];
-            broadcast(data.room, { type: 'roomDeleted' });
+            if (rooms[data.room]) {
+                rooms[data.room].forEach(user => user.socket.send(JSON.stringify({ type: 'roomDeleted' })));
+                delete rooms[data.room];
+                broadcastAdmin({ type: 'updateRooms', rooms: Object.keys(rooms) });
+            }
         }
     });
 
@@ -37,4 +39,12 @@ function broadcast(room, message) {
     if (rooms[room]) {
         rooms[room].forEach(user => user.socket.send(JSON.stringify(message)));
     }
+}
+
+function broadcastAdmin(message) {
+    server.clients.forEach(client => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify(message));
+        }
+    });
 }
