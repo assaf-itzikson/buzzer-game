@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Page</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+    <h1>Admin Page</h1>
+    <form id="deleteRoomForm">
+        <label for="room"></label><input type="text" id="room" placeholder="Enter room name to delete" required>
+        <button type="submit">Delete Room</button>
+    </form>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const deleteRoomForm = document.getElementById('deleteRoomForm');
+    const roomInput = document.getElementById('room');
+    let socket = new WebSocket('wss://house-of-games.glitch.me');
+
+    deleteRoomForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const room = roomInput.value.trim();
+        if (room) {
+            if (socket.readyState === WebSocket.OPEN) {
+                socket.send(JSON.stringify({ type: 'deleteRoom', room }));
+                roomInput.value = '';
+            } else {
+                console.error('WebSocket is not open. ReadyState:', socket.readyState);
+            }
+        }
+    });
+});
+</script>
+</body>
+</html>
