@@ -85,9 +85,4 @@ document.addEventListener('DOMContentLoaded', () => {
             userList.appendChild(li);
         });
     }
-
-    // Remove the beforeunload event listener to prevent clearing sessionStorage on page unload
-    // window.addEventListener('beforeunload', () => {
-    //     sessionStorage.removeItem('currentUser');
-    // });
 });
