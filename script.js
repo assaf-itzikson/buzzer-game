@@ -86,7 +86,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    window.addEventListener('beforeunload', () => {
-        localStorage.removeItem('currentUser');
-    });
+    // Remove the beforeunload event listener to prevent clearing localStorage on page unload
+    // window.addEventListener('beforeunload', () => {
+    //     localStorage.removeItem('currentUser');
+    // });
 });
