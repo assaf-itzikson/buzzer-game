@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 100);
 
         // Rejoin the user if they were previously in the room
-        const storedUser = localStorage.getItem('currentUser');
+        const storedUser = sessionStorage.getItem('currentUser');
         if (storedUser) {
             currentUser = storedUser;
             socket.send(JSON.stringify({ type: 'join', username: currentUser, room: currentRoom }));
@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
             users = [];
             updateUserList();
             buzzButton.disabled = true;
-            localStorage.removeItem('currentUser'); // Clear localStorage when room is deleted
+            sessionStorage.removeItem('currentUser'); // Clear sessionStorage when room is deleted
         }
     };
 
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (socket.readyState === WebSocket.OPEN) {
                 socket.send(JSON.stringify({ type: 'join', username, room: currentRoom }));
                 currentUser = username;
-                localStorage.setItem('currentUser', currentUser);
+                sessionStorage.setItem('currentUser', currentUser);
                 usernameInput.value = '';
                 roomDisplay.textContent = 'Game is in progress';
                 buzzButton.disabled = false;
@@ -86,8 +86,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Remove the beforeunload event listener to prevent clearing localStorage on page unload
+    // Remove the beforeunload event listener to prevent clearing sessionStorage on page unload
     // window.addEventListener('beforeunload', () => {
-    //     localStorage.removeItem('currentUser');
+    //     sessionStorage.removeItem('currentUser');
     // });
 });
