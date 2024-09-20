@@ -18,6 +18,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 socket.send(JSON.stringify({ type: 'queryUsers', room: currentRoom }));
             }
         }, 100);
+
+        // Rejoin the user if they were previously in the room
+        const storedUser = localStorage.getItem('currentUser');
+        if (storedUser) {
+            currentUser = storedUser;
+            socket.send(JSON.stringify({ type: 'join', username: currentUser, room: currentRoom }));
+            roomDisplay.textContent = 'Game is in progress';
+            buzzButton.disabled = false;
+        }
     };
 
     socket.onmessage = (event) => {
@@ -35,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
             users = [];
             updateUserList();
             buzzButton.disabled = true;
+            localStorage.removeItem('currentUser'); // Clear localStorage when room is deleted
         }
     };
 
@@ -45,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (socket.readyState === WebSocket.OPEN) {
                 socket.send(JSON.stringify({ type: 'join', username, room: currentRoom }));
                 currentUser = username;
+                localStorage.setItem('currentUser', currentUser);
                 usernameInput.value = '';
                 roomDisplay.textContent = 'Game is in progress';
                 buzzButton.disabled = false;
@@ -74,4 +85,8 @@ document.addEventListener('DOMContentLoaded', () => {
             userList.appendChild(li);
         });
     }
+
+    window.addEventListener('beforeunload', () => {
+        localStorage.removeItem('currentUser');
+    });
 });
