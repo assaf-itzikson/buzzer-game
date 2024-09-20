@@ -21,6 +21,8 @@ server.on('connection', (socket) => {
                 rooms['P&C\'s Team Hour'] = [];
                 broadcastAdmin({ type: 'updateRooms', rooms: Object.keys(rooms) });
             }
+        } else if (data.type === 'queryRooms') {
+            socket.send(JSON.stringify({ type: 'updateRooms', rooms: Object.keys(rooms) }));
         }
     });
 
