@@ -46,8 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 socket.send(JSON.stringify({ type: 'join', username, room: currentRoom }));
                 currentUser = username;
                 usernameInput.value = '';
-                roomDisplay.textContent = `Current Room: ${currentRoom}`;
-                buzzButton.disabled = false; // Enable buzz button when a user joins
+                roomDisplay.textContent = `${currentRoom} playing: Answer Smash`;
+                buzzButton.disabled = false;
             } else {
                 console.error('WebSocket is not open. ReadyState:', socket.readyState);
             }
