@@ -1,49 +1,68 @@
 const WebSocket = require('ws');
 const server = new WebSocket.Server({ port: 8080 });
 
-let rooms = { 'P&C\'s Team Hour': [] };
+let clients = [];
+let buzzed = false;
 
-server.on('connection', (socket) => {
-    socket.on('message', (message) => {
-        const data = JSON.parse(message);
-        if (data.type === 'join') {
-            rooms['P&C\'s Team Hour'].push({ username: data.username, socket });
-            broadcast('P&C\'s Team Hour', { type: 'currentUsers', users: rooms['P&C\'s Team Hour'].map(user => user.username) });
-            broadcastAdmin({ type: 'updateRooms', rooms: Object.keys(rooms) });
-        } else if (data.type === 'buzz') {
-            broadcast('P&C\'s Team Hour', { type: 'userBuzzed', username: data.username });
-            broadcast('P&C\'s Team Hour', { type: 'resetBuzz' });
-        } else if (data.type === 'queryUsers') {
-            socket.send(JSON.stringify({ type: 'currentUsers', users: rooms['P&C\'s Team Hour'].map(user => user.username) }));
-        } else if (data.type === 'deleteRoom') {
-            if (rooms['P&C\'s Team Hour']) {
-                rooms['P&C\'s Team Hour'].forEach(user => user.socket.send(JSON.stringify({ type: 'roomDeleted' })));
-                rooms['P&C\'s Team Hour'] = [];
-                broadcastAdmin({ type: 'updateRooms', rooms: Object.keys(rooms) });
+server.on('connection', (ws) => {
+    clients.push(ws);
+    console.log('New client connected');
+
+    ws.on('message', (message) => {
+        try {
+            const parsedMessage = JSON.parse(message);
+            if (parsedMessage.type && messageHandlers[parsedMessage.type]) {
+                messageHandlers[parsedMessage.type](ws, parsedMessage);
+            } else {
+                console.error('Unknown or missing message type:', parsedMessage.type);
             }
-        } else if (data.type === 'queryRooms') {
-            socket.send(JSON.stringify({ type: 'updateRooms', rooms: Object.keys(rooms) }));
+        } catch (error) {
+            console.error('Invalid message format:', error);
         }
     });
 
-    socket.on('close', () => {
-        for (let room in rooms) {
-            rooms[room] = rooms[room].filter(user => user.socket !== socket);
-            broadcast(room, { type: 'currentUsers', users: rooms[room].map(user => user.username) });
-        }
+    ws.on('close', () => {
+        clients = clients.filter(client => client !== ws);
+        console.log('Client disconnected');
     });
 });
 
-function broadcast(room, message) {
-    if (rooms[room]) {
-        rooms[room].forEach(user => user.socket.send(JSON.stringify(message)));
+const messageHandlers = {
+    join: (ws, msg) => {
+        ws.username = msg.username;
+        ws.room = msg.room;
+        broadcastToRoom(msg.room, { type: 'currentUsers', users: getUsersInRoom(msg.room) });
+    },
+    buzz: (ws, msg) => {
+        if (!buzzed) {
+            buzzed = true;
+            broadcastToRoom(msg.room, { type: 'userBuzzed', username: msg.username });
+        }
+    },
+    queryUsers: (ws, msg) => {
+        ws.send(JSON.stringify({ type: 'currentUsers', users: getUsersInRoom(msg.room) }));
+    },
+    deleteRoom: (ws, msg) => {
+        broadcastToRoom(msg.room, { type: 'roomDeleted' });
+        clients = clients.filter(client => client.room !== msg.room);
+    },
+    queryRooms: (ws) => {
+        const rooms = [...new Set(clients.map(client => client.room))];
+        ws.send(JSON.stringify({ type: 'updateRooms', rooms }));
+    },
+    resetBuzz: () => {
+        buzzed = false;
     }
-}
+};
 
-function broadcastAdmin(message) {
-    server.clients.forEach(client => {
-        if (client.readyState === WebSocket.OPEN) {
+const broadcastToRoom = (room, message) => {
+    clients.forEach(client => {
+        if (client.room === room && client.readyState === WebSocket.OPEN) {
             client.send(JSON.stringify(message));
         }
     });
-}
+};
+
+const getUsersInRoom = (room) => {
+    return clients.filter(client => client.room === room).map(client => client.username);
+};
