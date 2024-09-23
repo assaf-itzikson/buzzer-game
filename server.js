@@ -52,12 +52,21 @@ const messageHandlers = {
     },
     resetBuzz: () => {
         buzzed = false;
+        broadcast({ type: 'resetBuzz' });
     }
 };
 
 const broadcastToRoom = (room, message) => {
     clients.forEach(client => {
         if (client.room === room && client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify(message));
+        }
+    });
+};
+
+const broadcast = (message) => {
+    clients.forEach(client => {
+        if (client.readyState === WebSocket.OPEN) {
             client.send(JSON.stringify(message));
         }
     });
