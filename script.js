@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const userForm = document.getElementById('userForm');
     const usernameInput = document.getElementById('username');
     const buzzButton = document.getElementById('buzzButton');
-    const resetButton = document.getElementById('resetButton');
     const userList = document.getElementById('userList');
     const roomDisplay = document.getElementById('roomDisplay');
     const joinButton = document.getElementById('joinButton');
@@ -34,7 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
             users = [];
             updateUserList();
             buzzButton.disabled = true;
-            resetButton.disabled = true;
             sessionStorage.removeItem('currentUser');
         }
     };
@@ -53,7 +51,6 @@ document.addEventListener('DOMContentLoaded', () => {
             socket.send(JSON.stringify({ type: 'join', username: currentUser, room: currentRoom }));
             roomDisplay.textContent = 'Game is in progress';
             buzzButton.disabled = false;
-            resetButton.disabled = false;
         }
     };
 
@@ -77,7 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 usernameInput.value = '';
                 roomDisplay.textContent = 'Game is in progress';
                 buzzButton.disabled = false;
-                resetButton.disabled = false;
             } else {
                 console.error('WebSocket is not open. ReadyState:', socket.readyState);
             }
@@ -93,14 +89,6 @@ document.addEventListener('DOMContentLoaded', () => {
             socket.send(JSON.stringify({ type: 'buzz', username: currentUser, room: currentRoom }));
         } else {
             console.error('WebSocket is not open or user already buzzed. ReadyState:', socket.readyState);
-        }
-    });
-
-    resetButton.addEventListener('click', () => {
-        if (socket.readyState === WebSocket.OPEN) {
-            socket.send(JSON.stringify({ type: 'resetBuzz' }));
-        } else {
-            console.error('WebSocket is not open. ReadyState:', socket.readyState);
         }
     });
 

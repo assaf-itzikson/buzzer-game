@@ -37,6 +37,10 @@ const messageHandlers = {
         if (!buzzed) {
             buzzed = true;
             broadcastToRoom(msg.room, { type: 'userBuzzed', username: msg.username });
+            setTimeout(() => {
+                buzzed = false;
+                broadcast({ type: 'resetBuzz' });
+            }, 5000); // Reset buzzed state after 5 seconds
         }
     },
     queryUsers: (ws, msg) => {
@@ -49,10 +53,6 @@ const messageHandlers = {
     queryRooms: (ws) => {
         const rooms = [...new Set(clients.map(client => client.room))];
         ws.send(JSON.stringify({ type: 'updateRooms', rooms }));
-    },
-    resetBuzz: () => {
-        buzzed = false;
-        broadcast({ type: 'resetBuzz' });
     }
 };
 
