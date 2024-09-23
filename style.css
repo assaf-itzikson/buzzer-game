@@ -44,5 +44,7 @@ li {
 }
 
 .buzz {
-    height: 50%;
+    height: 40%;
+    background-color: transparent;
+    border: none;
 }
