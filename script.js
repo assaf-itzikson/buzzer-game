@@ -21,7 +21,10 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         userBuzzed: (message) => {
             buzzerSound.play().catch(error => console.error('Error playing sound:', error));
-            notifyUser(`${message.username} buzzed in first!`);
+            alert(`${message.username} buzzed in first!`);
+            setTimeout(() => {
+                window.alert = function() {}; // Override alert to dismiss it
+            }, 2000); // Dismiss alert after 2 seconds
             buzzButton.disabled = true;
             buzzed = true;
         },
@@ -31,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
             debounce = false;
         },
         roomDeleted: () => {
-            notifyUser('This room has been deleted by the admin.');
+            alert('This room has been deleted by the admin.');
             users = [];
             updateUserList();
             buzzButton.disabled = true;
@@ -107,15 +110,5 @@ document.addEventListener('DOMContentLoaded', () => {
             li.textContent = user;
             userList.appendChild(li);
         });
-    }
-
-    function notifyUser(message) {
-        const notification = document.createElement('div');
-        notification.className = 'notification';
-        notification.textContent = message;
-        document.body.appendChild(notification);
-        setTimeout(() => {
-            document.body.removeChild(notification);
-        }, 3000);
     }
 });
