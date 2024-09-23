@@ -17,21 +17,27 @@ body {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 400px;
 }
 
 form, button {
     margin: 10px 0;
+    width: 100%;
 }
 
 input {
     padding: 10px;
-    width: 200px;
-    margin-right: 10px;
+    width: calc(100% - 22px); /* Adjust for padding and border */
+    margin-right: 0;
+    box-sizing: border-box;
 }
 
 button {
     padding: 10px 20px;
     cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 ul {
@@ -47,4 +53,14 @@ li {
     height: 40%;
     background-color: transparent;
     border: none;
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 10px;
+    }
+
+    input, button {
+        padding: 8px;
+    }
 }
