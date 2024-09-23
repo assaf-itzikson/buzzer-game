@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const buzzerSound = new Audio('sounds/buzzer.wav');
     let buzzed = false;
     let debounce = false;
+    let clickTimestamp = null;
 
     const messageHandlers = {
         currentUsers: (message) => {
@@ -26,7 +27,12 @@ document.addEventListener('DOMContentLoaded', () => {
             buzzed = true;
         },
         resetBuzz: () => {
-            console.log('Resetting buzz state');
+            const resetTimestamp = new Date();
+            console.log('Resetting buzz state at:', resetTimestamp);
+            if (clickTimestamp) {
+                const timeDiff = resetTimestamp - clickTimestamp;
+                console.log('Time between click and reset:', timeDiff, 'ms');
+            }
             buzzButton.disabled = false;
             buzzed = false;
             debounce = false;
@@ -89,7 +95,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const handleBuzz = () => {
         if (socket.readyState === WebSocket.OPEN && !buzzed && !debounce) {
-            console.log('Buzz button clicked');
+            clickTimestamp = new Date();
+            console.log('Buzz button clicked at:', clickTimestamp);
             debounce = true;
             socket.send(JSON.stringify({ type: 'buzz', username: currentUser, room: currentRoom }));
         } else {
