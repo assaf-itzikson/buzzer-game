@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
             buzzed = true;
         },
         resetBuzz: () => {
+            console.log('Resetting buzz state');
             buzzButton.disabled = false;
             buzzed = false;
             debounce = false;
@@ -88,6 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const handleBuzz = () => {
         if (socket.readyState === WebSocket.OPEN && !buzzed && !debounce) {
+            console.log('Buzz button clicked');
             debounce = true;
             socket.send(JSON.stringify({ type: 'buzz', username: currentUser, room: currentRoom }));
         } else {
