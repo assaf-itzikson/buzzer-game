@@ -63,4 +63,8 @@ li {
     input, button {
         padding: 8px;
     }
+
+    .buzz {
+        height: 30%; /* Adjust height for smaller screens */
+    }
 }
