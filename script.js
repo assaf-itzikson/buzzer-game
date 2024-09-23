@@ -92,6 +92,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Add touch event listener for mobile devices
+    buzzButton.addEventListener('touchstart', () => {
+        if (socket.readyState === WebSocket.OPEN && !buzzed) {
+            socket.send(JSON.stringify({ type: 'buzz', username: currentUser, room: currentRoom }));
+        } else {
+            console.error('WebSocket is not open or user already buzzed. ReadyState:', socket.readyState);
+        }
+    });
+
     function updateUserList() {
         userList.innerHTML = '';
         users.forEach(user => {
