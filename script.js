@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const buzzerSound = new Audio('sounds/buzzer.wav');
     let buzzed = false;
     let debounce = false;
-    let clickTimestamp = null;
 
     const messageHandlers = {
         currentUsers: (message) => {
@@ -22,23 +21,17 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         userBuzzed: (message) => {
             buzzerSound.play().catch(error => console.error('Error playing sound:', error));
-            alert(`${message.username} buzzed in first!`);
+            notifyUser(`${message.username} buzzed in first!`);
             buzzButton.disabled = true;
             buzzed = true;
         },
         resetBuzz: () => {
-            const resetTimestamp = new Date();
-            console.log('Resetting buzz state at:', resetTimestamp);
-            if (clickTimestamp) {
-                const timeDiff = resetTimestamp - clickTimestamp;
-                console.log('Time between click and reset:', timeDiff, 'ms');
-            }
             buzzButton.disabled = false;
             buzzed = false;
             debounce = false;
         },
         roomDeleted: () => {
-            alert('This room has been deleted by the admin.');
+            notifyUser('This room has been deleted by the admin.');
             users = [];
             updateUserList();
             buzzButton.disabled = true;
@@ -95,8 +88,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const handleBuzz = () => {
         if (socket.readyState === WebSocket.OPEN && !buzzed && !debounce) {
-            clickTimestamp = new Date();
-            console.log('Buzz button clicked at:', clickTimestamp);
             debounce = true;
             socket.send(JSON.stringify({ type: 'buzz', username: currentUser, room: currentRoom }));
         } else {
@@ -116,5 +107,15 @@ document.addEventListener('DOMContentLoaded', () => {
             li.textContent = user;
             userList.appendChild(li);
         });
+    }
+
+    function notifyUser(message) {
+        const notification = document.createElement('div');
+        notification.className = 'notification';
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 3000);
     }
 });
