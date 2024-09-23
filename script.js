@@ -12,6 +12,28 @@ document.addEventListener('DOMContentLoaded', () => {
     let socket = new WebSocket('wss://house-of-games.glitch.me');
     const buzzerSound = new Audio('sounds/buzzer.wav');
 
+    const messageHandlers = {
+        currentUsers: (message) => {
+            users = message.users;
+            updateUserList();
+        },
+        userBuzzed: (message) => {
+            buzzerSound.play().catch(error => console.error('Error playing sound:', error));
+            alert(`${message.username} buzzed in first!`);
+            buzzButton.disabled = true;
+        },
+        resetBuzz: () => {
+            buzzButton.disabled = false;
+        },
+        roomDeleted: () => {
+            alert('This room has been deleted by the admin.');
+            users = [];
+            updateUserList();
+            buzzButton.disabled = true;
+            sessionStorage.removeItem('currentUser');
+        }
+    };
+
     socket.onopen = () => {
         console.log('WebSocket connection established');
         setInterval(() => {
@@ -20,7 +42,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }, 100);
 
-        // Rejoin the user if they were previously in the room
         const storedUser = sessionStorage.getItem('currentUser');
         if (storedUser) {
             currentUser = storedUser;
@@ -32,21 +53,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     socket.onmessage = (event) => {
         const message = JSON.parse(event.data);
-        if (message.type === 'currentUsers') {
-            users = message.users;
-            updateUserList();
-        } else if (message.type === 'userBuzzed') {
-            buzzerSound.play().catch(error => console.error('Error playing sound:', error));
-            alert(`${message.username} buzzed in first!`);
-            buzzButton.disabled = true;
-        } else if (message.type === 'resetBuzz') {
-            buzzButton.disabled = false;
-        } else if (message.type === 'roomDeleted') {
-            alert('This room has been deleted by the admin.');
-            users = [];
-            updateUserList();
-            buzzButton.disabled = true;
-            sessionStorage.removeItem('currentUser');
+        if (messageHandlers[message.type]) {
+            messageHandlers[message.type](message);
+        } else {
+            console.error('Unknown message type:', message.type);
         }
     };
 
