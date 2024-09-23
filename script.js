@@ -38,6 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (message.type === 'userBuzzed') {
             alert(`${message.username} buzzed in first!`);
             buzzButton.disabled = true;
+            buzzerSound.play(); // Play the buzzer sound for all users
         } else if (message.type === 'resetBuzz') {
             buzzButton.disabled = false;
         } else if (message.type === 'roomDeleted') {
@@ -73,7 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
     buzzButton.addEventListener('click', () => {
         if (socket.readyState === WebSocket.OPEN) {
             socket.send(JSON.stringify({ type: 'buzz', username: currentUser, room: currentRoom }));
-            buzzerSound.play(); // Play the buzzer sound
         } else {
             console.error('WebSocket is not open. ReadyState:', socket.readyState);
         }
