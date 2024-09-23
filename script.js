@@ -36,9 +36,9 @@ document.addEventListener('DOMContentLoaded', () => {
             users = message.users;
             updateUserList();
         } else if (message.type === 'userBuzzed') {
+            buzzerSound.play(); // Play the buzzer sound for all users
             alert(`${message.username} buzzed in first!`);
             buzzButton.disabled = true;
-            buzzerSound.play(); // Play the buzzer sound for all users
         } else if (message.type === 'resetBuzz') {
             buzzButton.disabled = false;
         } else if (message.type === 'roomDeleted') {
