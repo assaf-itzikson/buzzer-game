@@ -11,8 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentRoom = 'P&C\'s Team Hour';
     let socket = new WebSocket('wss://house-of-games.glitch.me');
     const buzzerSound = new Audio('sounds/buzzer.wav');
-    let buzzed = false;
-    let debounce = false;
 
     const messageHandlers = {
         currentUsers: (message) => {
@@ -22,16 +20,10 @@ document.addEventListener('DOMContentLoaded', () => {
         userBuzzed: (message) => {
             buzzerSound.play().catch(error => console.error('Error playing sound:', error));
             alert(`${message.username} buzzed in first!`);
-            setTimeout(() => {
-                window.alert = function() {}; // Override alert to dismiss it
-            }, 2000); // Dismiss alert after 2 seconds
             buzzButton.disabled = true;
-            buzzed = true;
         },
         resetBuzz: () => {
             buzzButton.disabled = false;
-            buzzed = false;
-            debounce = false;
         },
         roomDeleted: () => {
             alert('This room has been deleted by the admin.');
@@ -89,19 +81,13 @@ document.addEventListener('DOMContentLoaded', () => {
         userForm.dispatchEvent(new Event('submit'));
     });
 
-    const handleBuzz = () => {
-        if (socket.readyState === WebSocket.OPEN && !buzzed && !debounce) {
-            debounce = true;
+    buzzButton.addEventListener('click', () => {
+        if (socket.readyState === WebSocket.OPEN) {
             socket.send(JSON.stringify({ type: 'buzz', username: currentUser, room: currentRoom }));
         } else {
-            console.error('WebSocket is not open, user already buzzed, or debounce is active. ReadyState:', socket.readyState);
+            console.error('WebSocket is not open. ReadyState:', socket.readyState);
         }
-    };
-
-    buzzButton.addEventListener('click', handleBuzz);
-
-    // Add touch event listener for mobile devices
-    buzzButton.addEventListener('touchstart', handleBuzz);
+    });
 
     function updateUserList() {
         userList.innerHTML = '';
