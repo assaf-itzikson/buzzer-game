@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentUser = '';
     let currentRoom = 'P&C\'s Team Hour';
     let socket = new WebSocket('wss://house-of-games.glitch.me');
-    const buzzerSound = new Audio('sounds/buzzer.wav'); // Load the buzzer sound from the sounds folder
+    const buzzerSound = new Audio('sounds/buzzer.wav');
 
     socket.onopen = () => {
         console.log('WebSocket connection established');
@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
             users = message.users;
             updateUserList();
         } else if (message.type === 'userBuzzed') {
-            buzzerSound.play(); // Play the buzzer sound for all users
+            buzzerSound.play().catch(error => console.error('Error playing sound:', error));
             alert(`${message.username} buzzed in first!`);
             buzzButton.disabled = true;
         } else if (message.type === 'resetBuzz') {
@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
             users = [];
             updateUserList();
             buzzButton.disabled = true;
-            sessionStorage.removeItem('currentUser'); // Clear sessionStorage when room is deleted
+            sessionStorage.removeItem('currentUser');
         }
     };
 
