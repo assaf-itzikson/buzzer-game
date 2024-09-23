@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let socket = new WebSocket('wss://house-of-games.glitch.me');
     const buzzerSound = new Audio('sounds/buzzer.wav');
     let buzzed = false;
+    let debounce = false;
 
     const messageHandlers = {
         currentUsers: (message) => {
@@ -27,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
         resetBuzz: () => {
             buzzButton.disabled = false;
             buzzed = false;
+            debounce = false;
         },
         roomDeleted: () => {
             alert('This room has been deleted by the admin.');
@@ -84,22 +86,19 @@ document.addEventListener('DOMContentLoaded', () => {
         userForm.dispatchEvent(new Event('submit'));
     });
 
-    buzzButton.addEventListener('click', () => {
-        if (socket.readyState === WebSocket.OPEN && !buzzed) {
+    const handleBuzz = () => {
+        if (socket.readyState === WebSocket.OPEN && !buzzed && !debounce) {
+            debounce = true;
             socket.send(JSON.stringify({ type: 'buzz', username: currentUser, room: currentRoom }));
         } else {
-            console.error('WebSocket is not open or user already buzzed. ReadyState:', socket.readyState);
+            console.error('WebSocket is not open, user already buzzed, or debounce is active. ReadyState:', socket.readyState);
         }
-    });
+    };
+
+    buzzButton.addEventListener('click', handleBuzz);
 
     // Add touch event listener for mobile devices
-    buzzButton.addEventListener('touchstart', () => {
-        if (socket.readyState === WebSocket.OPEN && !buzzed) {
-            socket.send(JSON.stringify({ type: 'buzz', username: currentUser, room: currentRoom }));
-        } else {
-            console.error('WebSocket is not open or user already buzzed. ReadyState:', socket.readyState);
-        }
-    });
+    buzzButton.addEventListener('touchstart', handleBuzz);
 
     function updateUserList() {
         userList.innerHTML = '';
