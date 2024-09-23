@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentUser = '';
     let currentRoom = 'P&C\'s Team Hour';
     let socket = new WebSocket('wss://house-of-games.glitch.me');
+    const buzzerSound = new Audio('sounds/buzzer.wav'); // Load the buzzer sound from the sounds folder
 
     socket.onopen = () => {
         console.log('WebSocket connection established');
@@ -72,6 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
     buzzButton.addEventListener('click', () => {
         if (socket.readyState === WebSocket.OPEN) {
             socket.send(JSON.stringify({ type: 'buzz', username: currentUser, room: currentRoom }));
+            buzzerSound.play(); // Play the buzzer sound
         } else {
             console.error('WebSocket is not open. ReadyState:', socket.readyState);
         }
