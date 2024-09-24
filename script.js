@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (socket.readyState === WebSocket.OPEN && currentRoom) {
                 socket.send(JSON.stringify({ type: 'queryUsers', room: currentRoom }));
             }
-        }, 100);
+        }, 1000); // Changed interval to 1000 milliseconds
 
         const storedUser = sessionStorage.getItem('currentUser');
         if (storedUser) {
