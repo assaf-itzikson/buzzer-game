@@ -98,22 +98,22 @@ document.addEventListener('DOMContentLoaded', () => {
             const li = document.createElement('li');
             li.textContent = user;
 
-            const updateButton = document.createElement('button');
-            updateButton.textContent = 'Update Username';
-            updateButton.addEventListener('click', () => {
-                const newUsername = prompt('Enter new username:', user);
-                if (newUsername && socket.readyState === WebSocket.OPEN) {
-                    socket.send(JSON.stringify({ type: 'updateUsername', oldUsername: user, newUsername, room: currentRoom }));
-                    if (user === currentUser) {
+            if (user === currentUser) {
+                const updateButton = document.createElement('button');
+                updateButton.textContent = 'Update Username';
+                updateButton.addEventListener('click', () => {
+                    const newUsername = prompt('Enter new username:', user);
+                    if (newUsername && socket.readyState === WebSocket.OPEN) {
+                        socket.send(JSON.stringify({ type: 'updateUsername', oldUsername: user, newUsername, room: currentRoom }));
                         currentUser = newUsername;
                         sessionStorage.setItem('currentUser', currentUser);
+                    } else {
+                        console.error('WebSocket is not open. ReadyState:', socket.readyState);
                     }
-                } else {
-                    console.error('WebSocket is not open. ReadyState:', socket.readyState);
-                }
-            });
+                });
+                li.appendChild(updateButton);
+            }
 
-            li.appendChild(updateButton);
             userList.appendChild(li);
         });
     }
