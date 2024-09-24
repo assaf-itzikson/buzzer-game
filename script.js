@@ -101,18 +101,6 @@ document.addEventListener('DOMContentLoaded', () => {
         users.forEach(user => {
             const li = document.createElement('li');
             li.textContent = user;
-
-            const removeButton = document.createElement('button');
-            removeButton.textContent = 'Remove User';
-            removeButton.addEventListener('click', () => {
-                if (socket.readyState === WebSocket.OPEN) {
-                    socket.send(JSON.stringify({ type: 'removeUser', username: user, room: currentRoom }));
-                } else {
-                    console.error('WebSocket is not open. ReadyState:', socket.readyState);
-                }
-            });
-
-            li.appendChild(removeButton);
             userList.appendChild(li);
         });
     }
