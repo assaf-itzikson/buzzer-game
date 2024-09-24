@@ -31,6 +31,9 @@ document.addEventListener('DOMContentLoaded', () => {
             updateUserList();
             buzzButton.disabled = true;
             sessionStorage.removeItem('currentUser');
+        },
+        updateRooms: (message) => {
+            console.log('Rooms updated:', message.rooms);
         }
     };
 
