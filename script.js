@@ -31,9 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
             updateUserList();
             buzzButton.disabled = true;
             sessionStorage.removeItem('currentUser');
-        },
-        updateRooms: (message) => {
-            console.log('Rooms updated:', message.rooms);
         }
     };
 
@@ -43,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (socket.readyState === WebSocket.OPEN && currentRoom) {
                 socket.send(JSON.stringify({ type: 'queryUsers', room: currentRoom }));
             }
-        }, 1000); // Changed interval to 1000 milliseconds
+        }, 100);
 
         const storedUser = sessionStorage.getItem('currentUser');
         if (storedUser) {
@@ -97,23 +94,6 @@ document.addEventListener('DOMContentLoaded', () => {
         users.forEach(user => {
             const li = document.createElement('li');
             li.textContent = user;
-
-            if (user === currentUser) {
-                const updateButton = document.createElement('button');
-                updateButton.textContent = 'Update Username';
-                updateButton.addEventListener('click', () => {
-                    const newUsername = prompt('Enter new username:', user);
-                    if (newUsername && socket.readyState === WebSocket.OPEN) {
-                        socket.send(JSON.stringify({ type: 'updateUsername', oldUsername: user, newUsername, room: currentRoom }));
-                        currentUser = newUsername;
-                        sessionStorage.setItem('currentUser', currentUser);
-                    } else {
-                        console.error('WebSocket is not open. ReadyState:', socket.readyState);
-                    }
-                });
-                li.appendChild(updateButton);
-            }
-
             userList.appendChild(li);
         });
     }
