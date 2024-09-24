@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const adminUserList = document.getElementById('adminUserList');
     let socket = new WebSocket('wss://house-of-games.glitch.me');
     let users = [];
+    let currentRoom = '';
 
     const messageHandlers = {
         updateRooms: (message) => {
@@ -49,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
             li.appendChild(deleteButton);
             li.addEventListener('click', () => {
                 if (socket.readyState === WebSocket.OPEN) {
+                    currentRoom = room;
                     socket.send(JSON.stringify({ type: 'queryUsers', room }));
                 } else {
                     console.error('WebSocket is not open. ReadyState:', socket.readyState);
@@ -68,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
             removeButton.textContent = 'Remove User';
             removeButton.addEventListener('click', () => {
                 if (socket.readyState === WebSocket.OPEN) {
-                    socket.send(JSON.stringify({ type: 'removeUser', username: user, room: 'P&C\'s Team Hour' }));
+                    socket.send(JSON.stringify({ type: 'removeUser', username: user, room: currentRoom }));
                 } else {
                     console.error('WebSocket is not open. ReadyState:', socket.readyState);
                 }
