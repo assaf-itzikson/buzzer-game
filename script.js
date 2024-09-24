@@ -5,9 +5,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const userList = document.getElementById('userList');
     const roomDisplay = document.getElementById('roomDisplay');
     const joinButton = document.getElementById('joinButton');
-    const updateButton = document.createElement('button');
-    updateButton.textContent = 'Update Username';
-    userForm.appendChild(updateButton);
 
     let users = [];
     let currentUser = '';
@@ -92,23 +89,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    updateButton.addEventListener('click', () => {
-        const newUsername = usernameInput.value.trim();
-        if (newUsername && socket.readyState === WebSocket.OPEN) {
-            socket.send(JSON.stringify({ type: 'updateUsername', oldUsername: currentUser, newUsername, room: currentRoom }));
-            currentUser = newUsername;
-            sessionStorage.setItem('currentUser', currentUser);
-            usernameInput.value = '';
-        } else {
-            console.error('WebSocket is not open. ReadyState:', socket.readyState);
-        }
-    });
-
     function updateUserList() {
         userList.innerHTML = '';
         users.forEach(user => {
             const li = document.createElement('li');
             li.textContent = user;
+
+            const updateButton = document.createElement('button');
+            updateButton.textContent = 'Update Username';
+            updateButton.addEventListener('click', () => {
+                const newUsername = prompt('Enter new username:', user);
+                if (newUsername && socket.readyState === WebSocket.OPEN) {
+                    socket.send(JSON.stringify({ type: 'updateUsername', oldUsername: user, newUsername, room: currentRoom }));
+                    if (user === currentUser) {
+                        currentUser = newUsername;
+                        sessionStorage.setItem('currentUser', currentUser);
+                    }
+                } else {
+                    console.error('WebSocket is not open. ReadyState:', socket.readyState);
+                }
+            });
+
+            li.appendChild(updateButton);
             userList.appendChild(li);
         });
     }
