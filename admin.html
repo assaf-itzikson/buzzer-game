@@ -10,43 +10,9 @@
 <div class="container">
     <h1>Admin Page</h1>
     <ul id="roomList"></ul>
+    <h2>Users in Room</h2>
+    <ul id="adminUserList"></ul>
 </div>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const roomList = document.getElementById('roomList');
-    let socket = new WebSocket('wss://house-of-games.glitch.me');
-
-    socket.onopen = () => {
-        console.log('WebSocket connection established');
-        socket.send(JSON.stringify({ type: 'queryRooms' }));
-    };
-
-    socket.onmessage = (event) => {
-        const message = JSON.parse(event.data);
-        if (message.type === 'updateRooms') {
-            updateRoomList(message.rooms);
-        }
-    };
-
-    function updateRoomList(rooms) {
-        roomList.innerHTML = '';
-        rooms.forEach(room => {
-            const li = document.createElement('li');
-            li.textContent = room + ' ';
-            const deleteButton = document.createElement('button');
-            deleteButton.textContent = 'Delete';
-            deleteButton.addEventListener('click', () => {
-                if (socket.readyState === WebSocket.OPEN) {
-                    socket.send(JSON.stringify({ type: 'deleteRoom', room }));
-                } else {
-                    console.error('WebSocket is not open. ReadyState:', socket.readyState);
-                }
-            });
-            li.appendChild(deleteButton);
-            roomList.appendChild(li);
-        });
-    }
-});
-</script>
+<script src="admin.js"></script>
 </body>
 </html>
