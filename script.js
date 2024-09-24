@@ -5,6 +5,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const userList = document.getElementById('userList');
     const roomDisplay = document.getElementById('roomDisplay');
     const joinButton = document.getElementById('joinButton');
+    const updateButton = document.createElement('button');
+    updateButton.textContent = 'Update Username';
+    userForm.appendChild(updateButton);
 
     let users = [];
     let currentUser = '';
@@ -84,6 +87,18 @@ document.addEventListener('DOMContentLoaded', () => {
     buzzButton.addEventListener('click', () => {
         if (socket.readyState === WebSocket.OPEN) {
             socket.send(JSON.stringify({ type: 'buzz', username: currentUser, room: currentRoom }));
+        } else {
+            console.error('WebSocket is not open. ReadyState:', socket.readyState);
+        }
+    });
+
+    updateButton.addEventListener('click', () => {
+        const newUsername = usernameInput.value.trim();
+        if (newUsername && socket.readyState === WebSocket.OPEN) {
+            socket.send(JSON.stringify({ type: 'updateUsername', oldUsername: currentUser, newUsername, room: currentRoom }));
+            currentUser = newUsername;
+            sessionStorage.setItem('currentUser', currentUser);
+            usernameInput.value = '';
         } else {
             console.error('WebSocket is not open. ReadyState:', socket.readyState);
         }

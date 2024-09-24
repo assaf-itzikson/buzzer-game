@@ -23,6 +23,13 @@ server.on('connection', (socket) => {
             }
         } else if (data.type === 'queryRooms') {
             socket.send(JSON.stringify({ type: 'updateRooms', rooms: Object.keys(rooms) }));
+        } else if (data.type === 'updateUsername') {
+            const roomUsers = rooms[data.room];
+            const userIndex = roomUsers.findIndex(user => user.username === data.oldUsername);
+            if (userIndex !== -1) {
+                roomUsers[userIndex].username = data.newUsername;
+                broadcast(data.room, { type: 'currentUsers', users: roomUsers.map(user => user.username) });
+            }
         }
     });
 
