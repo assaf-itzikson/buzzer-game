@@ -31,6 +31,13 @@ document.addEventListener('DOMContentLoaded', () => {
             updateUserList();
             buzzButton.disabled = true;
             sessionStorage.removeItem('currentUser');
+        },
+        updateRooms: (message) => {
+            console.log('Rooms updated:', message.rooms);
+        },
+        removeUser: (message) => {
+            users = users.filter(user => user !== message.username);
+            updateUserList();
         }
     };
 
@@ -40,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (socket.readyState === WebSocket.OPEN && currentRoom) {
                 socket.send(JSON.stringify({ type: 'queryUsers', room: currentRoom }));
             }
-        }, 100);
+        }, 1000);
 
         const storedUser = sessionStorage.getItem('currentUser');
         if (storedUser) {
@@ -94,6 +101,18 @@ document.addEventListener('DOMContentLoaded', () => {
         users.forEach(user => {
             const li = document.createElement('li');
             li.textContent = user;
+
+            const removeButton = document.createElement('button');
+            removeButton.textContent = 'Remove User';
+            removeButton.addEventListener('click', () => {
+                if (socket.readyState === WebSocket.OPEN) {
+                    socket.send(JSON.stringify({ type: 'removeUser', username: user, room: currentRoom }));
+                } else {
+                    console.error('WebSocket is not open. ReadyState:', socket.readyState);
+                }
+            });
+
+            li.appendChild(removeButton);
             userList.appendChild(li);
         });
     }
