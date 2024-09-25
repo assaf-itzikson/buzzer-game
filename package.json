@@ -1,5 +1,6 @@
 {
   "name": "buzzer-game",
+  "author": "Assaf Itzikson",
   "version": "1.0.0",
   "description": "A simple buzzer game",
   "main": "server.js",
