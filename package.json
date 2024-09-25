@@ -4,9 +4,13 @@
   "description": "A simple buzzer game",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "vite"
   },
   "dependencies": {
     "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "vite": "^5.4.8"
   }
 }
