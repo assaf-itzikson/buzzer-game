@@ -10,11 +10,33 @@
 <div class="container">
     <h1>Admin Page</h1>
     <ul id="roomList"></ul>
+    <h2>Users in Room</h2>
+    <ul id="adminUserList"></ul>
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const roomList = document.getElementById('roomList');
+        const adminUserList = document.getElementById('adminUserList');
         let socket = new WebSocket('wss://house-of-games.glitch.me');
+        let users = [];
+
+        const messageHandlers = {
+            updateRooms: (message) => {
+                updateRoomList(message.rooms);
+            },
+            currentUsers: (message) => {
+                users = message.users;
+                updateAdminUserList();
+            },
+            newUser: (message) => {
+                users.push(message.username);
+                updateAdminUserList();
+            },
+            removeUser: (message) => {
+                users = users.filter(user => user !== message.username);
+                updateAdminUserList();
+            }
+        };
 
         socket.onopen = () => {
             console.log('WebSocket connection established');
@@ -23,8 +45,10 @@
 
         socket.onmessage = (event) => {
             const message = JSON.parse(event.data);
-            if (message.type === 'updateRooms') {
-                updateRoomList(message.rooms);
+            if (messageHandlers[message.type]) {
+                messageHandlers[message.type](message);
+            } else {
+                console.error('Unknown message type:', message.type);
             }
         };
 
@@ -43,7 +67,35 @@
                     }
                 });
                 li.appendChild(deleteButton);
+                li.addEventListener('click', () => {
+                    if (socket.readyState === WebSocket.OPEN) {
+                        socket.send(JSON.stringify({ type: 'queryUsers', room }));
+                    } else {
+                        console.error('WebSocket is not open. ReadyState:', socket.readyState);
+                    }
+                });
                 roomList.appendChild(li);
+            });
+        }
+
+        function updateAdminUserList() {
+            adminUserList.innerHTML = '';
+            users.forEach(user => {
+                const li = document.createElement('li');
+                li.textContent = user;
+
+                const removeButton = document.createElement('button');
+                removeButton.textContent = 'Remove User';
+                removeButton.addEventListener('click', () => {
+                    if (socket.readyState === WebSocket.OPEN) {
+                        socket.send(JSON.stringify({ type: 'removeUser', username: user }));
+                    } else {
+                        console.error('WebSocket is not open. ReadyState:', socket.readyState);
+                    }
+                });
+
+                li.appendChild(removeButton);
+                adminUserList.appendChild(li);
             });
         }
     });

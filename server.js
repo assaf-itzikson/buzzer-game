@@ -9,7 +9,7 @@ server.on('connection', (socket) => {
         if (data.type === 'join') {
             rooms['P&C\'s Team Hour'].push({ username: data.username, socket });
             broadcast('P&C\'s Team Hour', { type: 'currentUsers', users: rooms['P&C\'s Team Hour'].map(user => user.username) });
-            broadcastAdmin({ type: 'updateRooms', rooms: Object.keys(rooms) });
+            broadcastAdmin({ type: 'newUser', username: data.username });
         } else if (data.type === 'buzz') {
             broadcast('P&C\'s Team Hour', { type: 'userBuzzed', username: data.username });
             broadcast('P&C\'s Team Hour', { type: 'resetBuzz' });
@@ -23,6 +23,10 @@ server.on('connection', (socket) => {
             }
         } else if (data.type === 'queryRooms') {
             socket.send(JSON.stringify({ type: 'updateRooms', rooms: Object.keys(rooms) }));
+        } else if (data.type === 'removeUser') {
+            rooms['P&C\'s Team Hour'] = rooms['P&C\'s Team Hour'].filter(user => user.username !== data.username);
+            broadcast('P&C\'s Team Hour', { type: 'currentUsers', users: rooms['P&C\'s Team Hour'].map(user => user.username) });
+            broadcastAdmin({ type: 'removeUser', username: data.username });
         }
     });
 
