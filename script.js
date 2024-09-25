@@ -31,13 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
             updateUserList();
             buzzButton.disabled = true;
             sessionStorage.removeItem('currentUser');
-        },
-        updateRooms: (message) => {
-            console.log('Rooms updated:', message.rooms);
-        },
-        removeUser: (message) => {
-            users = users.filter(user => user !== message.username);
-            updateUserList();
         }
     };
 
@@ -47,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (socket.readyState === WebSocket.OPEN && currentRoom) {
                 socket.send(JSON.stringify({ type: 'queryUsers', room: currentRoom }));
             }
-        }, 1000);
+        }, 100);
 
         const storedUser = sessionStorage.getItem('currentUser');
         if (storedUser) {

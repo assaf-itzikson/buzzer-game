@@ -23,10 +23,6 @@ server.on('connection', (socket) => {
             }
         } else if (data.type === 'queryRooms') {
             socket.send(JSON.stringify({ type: 'updateRooms', rooms: Object.keys(rooms) }));
-        } else if (data.type === 'removeUser') {
-            rooms['P&C\'s Team Hour'] = rooms['P&C\'s Team Hour'].filter(user => user.username !== data.username);
-            broadcast('P&C\'s Team Hour', { type: 'currentUsers', users: rooms['P&C\'s Team Hour'].map(user => user.username) });
-            broadcast('P&C\'s Team Hour', { type: 'removeUser', username: data.username });
         }
     });
 
