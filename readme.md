@@ -1,36 +1,83 @@
 # Buzzer Game
 
-This is my first attempt at writing a buzzer game from scratch.
+A simple buzzer game where users can join a room, buzz in, and the admin can manage users.
 
-## How to Run the Game
+## Features
 
-1. **Clone the repository:**
+- Users can join a room and buzz in.
+- Admin page to manage rooms and users.
+- Real-time updates using WebSockets.
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js
+- Yarn or npm
+
+### Installation
+
+1. Clone the repository:
     ```sh
-    git clone <repository-url>
-    cd <repository-directory>
+    git clone https://github.com/your-username/buzzer-game.git
+    cd buzzer-game
     ```
 
-2. **Install dependencies:**
-    If there are any dependencies, install them using npm or yarn. For example:
+2. Install dependencies:
     ```sh
+    yarn install
+    # or
     npm install
     ```
 
-3. **Start the WebSocket server:**
-    Ensure you have a WebSocket server running on `ws://localhost:8080`. You can use a simple Node.js WebSocket server or any other WebSocket server implementation.
+### Running the Application
 
-4. **Open the `index.html` file:**
-    Open the `index.html` file in your web browser to start the game.
+1. Start the server:
     ```sh
-    open index.html
+    yarn start
+    # or
+    npm start
     ```
 
-5. **Join the game:**
-    - Enter your name in the input field and click "Join Game".
-    - Once joined, the "Buzz In!" button will be enabled.
+2. Open your browser and navigate to:
+    - `http://localhost:8080` for the game page.
+    - `http://localhost:8080/admin.html` for the admin page.
 
-6. **Buzz in:**
-    - Click the "Buzz In!" button to buzz in.
-    - The first user to buzz in will be announced.
+## Usage
 
-Enjoy the game!this is my first attempt at writing a buzzer game from scratch
+### Game Page
+
+1. Enter your name in the input field.
+2. Click the "Join P&C's Team Hour Room" button to join the room.
+3. Click the "Buzz In!" button to buzz in.
+
+### Admin Page
+
+1. View the list of rooms and users.
+2. Click on a room to see the users in that room.
+3. Remove users by clicking the "Remove User" button next to their name.
+
+## Project Structure
+
+- `server.js`: The server-side code handling WebSocket connections.
+- `index.html`: The main game page.
+- `admin.html`: The admin page.
+- `script.js`: The client-side JavaScript for the game page.
+- `style.css`: The CSS file for styling the pages.
+
+## Dependencies
+
+- `ws`: WebSocket library for Node.js.
+- `vite`: Development server and build tool.
+
+## Hosting
+
+This project is connected to a `glitch.com` hosted server and can be used with GitHub Pages for the frontend. To set this up:
+
+1. Deploy the server code to `glitch.com`.
+2. Update the WebSocket URL in the client-side code to point to the `glitch.com` server.
+3. Host the frontend on GitHub Pages by enabling GitHub Pages in the repository settings.
+
+## License
+
+This project is licensed under the MIT License.
