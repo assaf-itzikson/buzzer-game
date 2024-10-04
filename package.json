@@ -1,20 +1,20 @@
 {
   "name": "buzzer-game",
-  "author": "Assaf Itzikson",
   "version": "1.0.0",
-  "description": "A simple buzzer game",
+  "description": "A simple buzzer game where users can join a room, buzz in, and the admin can manage users.",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "vite"
+    "start": "node server.js"
   },
   "dependencies": {
-    "body-parser": "^1.20.3",
     "express": "^4.21.0",
+    "body-parser": "^2.0.1",
     "express-session": "^1.18.0",
     "ws": "^8.18.0"
   },
   "devDependencies": {
-    "vite": "^5.4.8"
-  }
+    "vite": "^2.6.4"
+  },
+  "author": "",
+  "license": "MIT"
 }
