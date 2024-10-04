@@ -3,24 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>P&C's House of Games</title>
+    <title>Admin Page</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/x-icon" href="./images/favicon.ico">
 </head>
 <body>
-<div class="container">
-    <h1>P&C's House of Games presents:</h1>
-    <h2>Answer Smash</h2>
-    <form id="userForm">
-        <label for="username"></label><input type="text" id="username" placeholder="Enter your name" required>
-    </form>
-    <div id="roomDisplay"></div>
-    <button id="joinButton">Join P&C's Team Hour Room</button><br>
-    <button id="buzzButton" class="buzz" disabled>
-        <img src="./images/buzzer.png" alt="Buzz In!">
-    </button>
-    <ul id="userList"></ul>
+<div class="container" id="adminContainer">
+    <h1>Admin Page</h1>
+    <ul id="roomList"></ul>
+    <h2>Users in Room</h2>
+    <ul id="adminUserList"></ul>
 </div>
-<script src="script.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const adminContainer = document.getElementById('adminContainer');
+        const roomList = document.getElementById('roomList');
+        const adminUserList = document.getElementById('adminUserList');
+        let socket = new WebSocket('wss://house-of-games.glitch.me');
+
+        socket.onopen = () => {
+            socket.send(JSON.stringify({ type: 'queryRooms' }));
+        };
+
+        socket.onmessage = (event) => {
+            const message = JSON.parse(event.data);
+            if (messageHandlers[message.type]) {
+                messageHandlers[message.type](message);
+            } else {
+                console.error('Unknown message type:', message.type);
+            }
+        };
+
+        const messageHandlers = {
+            updateRooms: (message) => {
+                updateRoomList(message.rooms);
+            },
+            currentUsers: (message) => {
+                users = message.users;
+                updateAdminUserList();
+            },
+            newUser: (message) => {
+                users.push(message.username);
+                updateAdminUserList();
+            },
+            removeUser: (message) => {
+                users = users.filter(user => user !== message.username);
+                updateAdminUserList();
+            }
+        };
+
+        function updateRoomList(rooms) {
+            roomList.innerHTML = '';
+            rooms.forEach(room => {
+                const li = document.createElement('li');
+                li.textContent = room + ' ';
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Delete';
+                deleteButton.addEventListener('click', () => {
+                    if (socket.readyState === WebSocket.OPEN) {
+                        socket.send(JSON.stringify({ type: 'deleteRoom', room }));
+                    } else {
+                        console.error('WebSocket is not open. ReadyState:', socket.readyState);
+                    }
+                });
+                li.appendChild(deleteButton);
+                li.addEventListener('click', () => {
+                    if (socket.readyState === WebSocket.OPEN) {
+                        socket.send(JSON.stringify({ type: 'queryUsers', room }));
+                    } else {
+                        console.error('WebSocket is not open. ReadyState:', socket.readyState);
+                    }
+                });
+                roomList.appendChild(li);
+            });
+        }
+
+        function updateAdminUserList() {
+            adminUserList.innerHTML = '';
+            users.forEach(user => {
+                const li = document.createElement('li');
+                li.textContent = user;
+
+                const removeButton = document.createElement('button');
+                removeButton.textContent = 'Remove User';
+                removeButton.addEventListener('click', () => {
+                    if (socket.readyState === WebSocket.OPEN) {
+                        socket.send(JSON.stringify({ type: 'removeUser', username: user }));
+                    } else {
+                        console.error('WebSocket is not open. ReadyState:', socket.readyState);
+                    }
+                });
+
+                li.appendChild(removeButton);
+                adminUserList.appendChild(li);
+            });
+        }
+    });
+</script>
 </body>
 </html>

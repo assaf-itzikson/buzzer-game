@@ -1,9 +1,27 @@
+const express = require('express');
+const http = require('http');
 const WebSocket = require('ws');
-const server = new WebSocket.Server({ port: 8080 });
+const basicAuth = require('express-basic-auth');
+
+const app = express();
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
+
+// Use environment variables for authentication
+const users = {};
+users[process.env.ADMIN_USER] = process.env.ADMIN_PASS;
+
+app.use(basicAuth({
+    users: users,
+    challenge: true
+}));
+
+app.use(express.json());
+app.use(express.static('public'));
 
 let rooms = { 'P&C\'s Team Hour': [] };
 
-server.on('connection', (socket) => {
+wss.on('connection', (socket) => {
     socket.on('message', (message) => {
         const data = JSON.parse(message);
         if (data.type === 'join') {
@@ -45,9 +63,14 @@ function broadcast(room, message) {
 }
 
 function broadcastAdmin(message) {
-    server.clients.forEach(client => {
+    wss.clients.forEach(client => {
         if (client.readyState === WebSocket.OPEN) {
             client.send(JSON.stringify(message));
         }
     });
 }
+
+const port = process.env.PORT || 3000;
+server.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+});
