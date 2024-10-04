@@ -29,23 +29,34 @@
         const adminContainer = document.getElementById('adminContainer');
         const roomList = document.getElementById('roomList');
         const adminUserList = document.getElementById('adminUserList');
-        const socket = new WebSocket('wss://house-of-games.glitch.me');
-        let users = [];
+        let socket;
 
-        const ADMIN_CREDENTIALS = {
-            username: 'admin',
-            password: 'password123'
-        };
-
-        loginForm.addEventListener('submit', (event) => {
+        loginForm.addEventListener('submit', async (event) => {
             event.preventDefault();
             const username = document.getElementById('adminUsername').value;
             const password = document.getElementById('adminPassword').value;
 
-            if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
+            const response = await fetch('/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+
+            if (response.ok) {
                 loginContainer.style.display = 'none';
                 adminContainer.style.display = 'block';
-                socket.send(JSON.stringify({ type: 'queryRooms' }));
+                socket = new WebSocket('wss://house-of-games.glitch.me');
+                socket.onopen = () => {
+                    socket.send(JSON.stringify({ type: 'queryRooms' }));
+                };
+                socket.onmessage = (event) => {
+                    const message = JSON.parse(event.data);
+                    if (messageHandlers[message.type]) {
+                        messageHandlers[message.type](message);
+                    } else {
+                        console.error('Unknown message type:', message.type);
+                    }
+                };
             } else {
                 alert('Invalid username or password');
             }
@@ -66,19 +77,6 @@
             removeUser: (message) => {
                 users = users.filter(user => user !== message.username);
                 updateAdminUserList();
-            }
-        };
-
-        socket.onopen = () => {
-            console.log('WebSocket connection established');
-        };
-
-        socket.onmessage = (event) => {
-            const message = JSON.parse(event.data);
-            if (messageHandlers[message.type]) {
-                messageHandlers[message.type](message);
-            } else {
-                console.error('Unknown message type:', message.type);
             }
         };
 

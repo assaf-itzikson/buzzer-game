@@ -1,9 +1,46 @@
 const WebSocket = require('ws');
-const server = new WebSocket.Server({ port: 8080 });
+const http = require('http');
+const express = require('express');
+const bodyParser = require('body-parser');
+const session = require('express-session');
+
+const app = express();
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
+
+app.use(bodyParser.json());
+app.use(session({
+    secret: 'your-secret-key',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false } // Set to true if using HTTPS
+}));
+
+const ADMIN_CREDENTIALS = {
+    username: 'admin',
+    password: 'password123'
+};
+
+app.post('/login', (req, res) => {
+    const { username, password } = req.body;
+    if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
+        req.session.authenticated = true;
+        res.status(200).send({ message: 'Login successful' });
+    } else {
+        res.status(401).send({ message: 'Invalid credentials' });
+    }
+});
+
+app.use(express.static('public'));
 
 let rooms = { 'P&C\'s Team Hour': [] };
 
-server.on('connection', (socket) => {
+wss.on('connection', (socket, req) => {
+    if (!req.session || !req.session.authenticated) {
+        socket.close();
+        return;
+    }
+
     socket.on('message', (message) => {
         const data = JSON.parse(message);
         if (data.type === 'join') {
@@ -45,9 +82,13 @@ function broadcast(room, message) {
 }
 
 function broadcastAdmin(message) {
-    server.clients.forEach(client => {
+    wss.clients.forEach(client => {
         if (client.readyState === WebSocket.OPEN) {
             client.send(JSON.stringify(message));
         }
     });
 }
+
+server.listen(8080, () => {
+    console.log('Server is listening on port 8080');
+});
